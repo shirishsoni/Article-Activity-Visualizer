@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+    <meta charset="utf-8">
+    <style type="text/css"> /* set the CSS */
+
+        .line_news {
+            fill: none;
+            stroke: blue;
+            stroke-width: 2.5px;
+        }
+
+        .line_blog {
+            fill: none;
+            stroke: yellow;
+            stroke-width: 2.5px;
+        }
+
+        .line_positive {
+            fill: none;
+            stroke: green;
+            stroke-width: 1.5px;
+        }
+
+        .line_negative {
+            fill: none;
+            stroke: red;
+            stroke-width: 1.5px;
+        }
+
+        .line_neutral {
+            fill:none;
+            stroke: grey;
+            stroke-width: 1.5px;
+        }
+
+        #sentimentChart {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:400px;
+            height: 400px;
+        }
+
+        #lineChartTitle1 {
+            font-family: Verdana;
+            font-size  : 14px;
+            fill       : lightgrey;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        #lineChartTitle2 {
+            font-family: Verdana;
+            font-size  : 72px;
+            fill       : grey;
+            text-anchor: middle;
+            font-weight: bold;
+            /*font-style: italic;*/
+        }
+
+        /*for line chart*/
+        .axis path, .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges; /*The shape-rendering property is an SVG attribute, used here to make sure our axis and its tick mark lines are pixel-perfect.*/ 
+        }
+
+        .dot {
+            /*fill: white;*/
+            /*stroke: steelblue;*/
+            stroke-width: 1.5px;
+        }               
+
+        .axis text {
+            font-family: Verdana;
+            font-size: 11px;
+        }
+
+        .title {
+            font-family: Verdana;
+            font-size: 15px;	
+                
+        }
+
+        .xAxis {
+            font-family: verdana;
+            font-size: 11px;
+            fill: black;
+        }  
+
+        .yAxis {
+            font-family: verdana;
+            font-size: 11px;
+            fill: white;
+        }
+
+    </style>
+    <body>
+        <div id="sentimentChart"></div>
+
+
+        <script>
+            
+            function dsLineChartBasics() {
+
+                var margin = {top: 20, right: 10, bottom: 0, left: 50},
+                    width = 500 - margin.left - margin.right,
+                    height = 150 - margin.top - margin.bottom;
+        
+                return {
+                    margin : margin, 
+                    width : width, 
+                    height : height
+                };
+            }
+
+            function dsLineChart() {
+
+                var firstDatasetLineChart = datasetLineChartChosen(group);    
+
+                var basics = dsLineChartBasics();
+
+                var margin = basics.margin,
+                    width = basics.width,
+                    height = basics.height
+                    ;
+
+                var xScale = d3.scale.linear()
+                    .domain([0, firstDatasetLineChart.length-1])
+                    .range([0, width])
+                    ;
+
+                var yScale = d3.scale.linear()
+                    .domain([0, d3.max(firstDatasetLineChart, function(d) { return d.measure; })])
+                    .range([height, 0])
+                    ;
+
+                var line = d3.svg.line()
+                    //.x(function(d) { return xScale(d.category); })
+                    .x(function(d, i) { return xScale(i); })
+                    .y(function(d) { return yScale(d.measure); })
+                    ;
+
+                var svg = d3.select("#sentimentChart").append("svg")
+                    .datum(firstDatasetLineChart)
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    // create group and move it so that margins are respected (space for axis and title)
+                    
+                var plot = svg
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .attr("id", "sentimentPlot")
+                    ;
+
+                    /* descriptive titles as part of plot -- start */
+                var dsLength=firstDatasetLineChart.length;
+
+                plot.append("text")
+                    .text(firstDatasetLineChart[dsLength-1].measure)
+                    .attr("id","lineChartTitle2")
+                    .attr("x",width/2)
+                    .attr("y",height/2)	
+                    ;
+                /* descriptive titles -- end */
+                    
+                plot.append("path")
+                    .attr("class", "line")
+                    .attr("d", line)	
+                    // add color
+                    .attr("stroke", "lightgrey")
+                    ;
+                
+                plot.selectAll(".dot")
+                    .data(firstDatasetLineChart)
+                    .enter().append("circle")
+                    .attr("class", "dot")
+                    //.attr("stroke", function (d) { return d.measure==datasetMeasureMin ? "red" : (d.measure==datasetMeasureMax ? "green" : "steelblue") } )
+                    .attr("fill", function (d) { return d.measure==d3.min(firstDatasetLineChart, function(d) { return d.measure; }) ? "red" : (d.measure==d3.max(firstDatasetLineChart, function(d) { return d.measure; }) ? "green" : "white") } )
+                    //.attr("stroke-width", function (d) { return d.measure==datasetMeasureMin || d.measure==datasetMeasureMax ? "3px" : "1.5px"} )
+                    .attr("cx", line.x())
+                    .attr("cy", line.y())
+                    .attr("r", 3.5)
+                    .attr("stroke", "lightgrey")
+                    .append("title")
+                    .text(function(d) { return d.category + ": " + formatAsInteger(d.measure); })
+                    ;
+
+                svg.append("text")
+                    .text("Performance 2012")
+                    .attr("id","lineChartTitle1")	
+                    .attr("x",margin.left + ((width + margin.right)/2))
+                    .attr("y", 10)
+                    ;
+
+            }
+
+        </script>
+    </body>
+</html>
