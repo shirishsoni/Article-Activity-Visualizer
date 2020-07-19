@@ -7,7 +7,7 @@ DataPreProcessing.ipynb is a python notebook regarding the data processing steps
 
 - Data visualization
 
-The visualizations have been developed using HTMl,CSS and D3.js. Various primary Information Visualization concepts and theories have been incorporated in the desing of the dashboard.
+The visualizations have been developed using HTMl, CSS and D3.js. Various primary Information Visualization concepts and theories have been incorporated in the desing of the dashboard.
 This is the first iteration of the initial design plan for visualizing valuable information obtain from textual data analysis.
 
 Dashboard screenshots are attached in the "Dashboard Demo".
